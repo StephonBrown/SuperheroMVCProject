@@ -1,0 +1,109 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+ http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+ http://www.springframework.org/schema/security
+ http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <beans:bean id="webexpressionHandler"
+                class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler"/> 
+    
+    <beans:bean id="encoder"
+                class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/> 
+                
+    <http pattern="/login" security="none" />
+    <http pattern="/error" security="none" />
+    <http pattern="/css/**" security="none" />
+    <http pattern="/js/**" security="none" />
+    <http pattern="/img/**" security="none" />
+
+    <http auto-config="true" use-expressions="false">
+        <form-login login-processing-url="/j_spring_security_check"
+                    login-page="/login"
+                    authentication-failure-url="/login?login_error=1"/>
+       <!-- Index links-->
+        <intercept-url pattern="/hero/home" 
+                       access="IS_AUTHENTICATED_ANONYMOUSLY" />
+        <intercept-url pattern="/"
+                       access="ROLE_USER" />
+        <intercept-url pattern="/index.jsp" 
+                       access="ROLE_USER" />
+        
+        <!-- Hero Links -->
+        <intercept-url pattern="/hero/create" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/hero/edit" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/hero/edit/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/hero/details/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/hero/delete" 
+                       access="ROLE_ADMIN" />
+        
+        <!-- Organization Links-->
+        <intercept-url pattern="/organization/home" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/organization/create" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/organization/edit/**" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/organization/edit" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/organization/details/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/organization/delete/**" 
+                       access="ROLE_ADMIN" />
+        
+        <!-- Location Links -->
+        <intercept-url pattern="/location/home" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/location/create" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/location/edit/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/location/edit" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/location/delete/**" 
+                       access="ROLE_ADMIN" />
+        
+        <!-- Sighting Links -->
+        <intercept-url pattern="/sighting/home" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/sighting/create" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/sighting/edit/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/sighting/edit" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/sighting/details/**" 
+                       access="ROLE_USER" />
+        <intercept-url pattern="/sighting/delete/**" 
+                       access="ROLE_ADMIN" />
+        
+        <intercept-url pattern="/user/home" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/user/create" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/user/edit/**" 
+                       access="ROLE_ADMIN" />
+        <intercept-url pattern="/user/delete/**" 
+                       access="ROLE_ADMIN" />
+        
+        <intercept-url pattern="/**" access="ROLE_USER" />
+    </http>
+    <authentication-manager>
+        <authentication-provider>
+            <password-encoder ref="encoder"/>
+            <jdbc-user-service id="userService"
+                               data-source-ref="dataSource"
+                               users-by-username-query=
+ "select username, password, enabled from users where username=?"
+                               authorities-by-username-query=
+ "select username, authority from authorities where username=?" />
+        </authentication-provider>
+    </authentication-manager>
+
+</beans:beans>
+

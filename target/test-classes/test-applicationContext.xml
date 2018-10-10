@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+              xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc.xsd
+                           http://www.springframework.org/schema/tx 
+                           http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+                           http://www.springframework.org/schema/context
+                           http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd"> 
+
+    <!-- Bean definitions go here -->
+    <tx:annotation-driven />
+    <bean id="dataSource"
+        class="org.apache.commons.dbcp2.BasicDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" 
+                value="jdbc:mysql://localhost:3306/SuperHeroSighting_Test"/>
+      <property name="username" value="root" />
+      <property name="password" value="change123" />
+      <property name="initialSize" value="5" />
+      <property name="maxTotal" value="10" />
+    </bean>
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <bean name = "HeroDao" class = "com.sg.superherosightingsspringmvc.dao.HeroDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean> 
+    <bean name = "SuperpowerDao" class = "com.sg.superherosightingsspringmvc.dao.SuperpowerDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean> 
+    <bean name = "LocationDao" class = "com.sg.superherosightingsspringmvc.dao.LocationDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean> 
+    <bean name = "SightingDao" class = "com.sg.superherosightingsspringmvc.dao.SightingDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean> 
+    <bean name = "MemberDao" class = "com.sg.superherosightingsspringmvc.dao.MemberDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean>
+    <bean name = "OrganizationDao" class = "com.sg.superherosightingsspringmvc.dao.OrganizationDaoDbImpl">
+        <constructor-arg ref ="jdbcTemplate" />
+    </bean> 
+    <bean id="UserDao" class="com.sg.superherosightingsspringmvc.dao.UserDaoDbImpl">
+        <property name="jdbcTemplate" ref="jdbcTemplate" />
+    </bean>
+    <bean name = "HeroServiceLayer" class = "com.sg.superherosightingsspringmvc.service.HeroServiceLayerImpl">
+        <constructor-arg ref ="HeroDao" />
+        <property name="LocationServiceLayer" ref="LocationServiceLayer"/>
+        <property name="SightingServiceLayer" ref="SightingServiceLayer"/>
+    </bean> 
+    <bean name = "SuperpowerServiceLayer" class = "com.sg.superherosightingsspringmvc.service.SuperpowerServiceLayerImpl">
+        <constructor-arg ref ="SuperpowerDao" />
+        <constructor-arg ref ="HeroServiceLayer" />
+    </bean> 
+
+    <bean name = "LocationServiceLayer" class = "com.sg.superherosightingsspringmvc.service.LocationServiceLayerImpl">
+        <constructor-arg ref ="LocationDao" />
+        <constructor-arg ref ="HeroServiceLayer" />
+    </bean> 
+    <bean name = "SightingServiceLayer" class = "com.sg.superherosightingsspringmvc.service.SightingServiceLayerImpl">
+        <constructor-arg ref ="SightingDao" />
+        <constructor-arg ref ="LocationServiceLayer" />
+        <constructor-arg ref ="HeroServiceLayer" />
+    </bean> 
+    <bean name = "OrganizationServiceLayer" class = "com.sg.superherosightingsspringmvc.service.OrganizationServiceLayerImpl">
+        <constructor-arg ref ="OrganizationDao" />
+        <constructor-arg ref ="LocationServiceLayer" />
+        <constructor-arg ref ="HeroServiceLayer" />
+    </bean>  
+    <bean name = "MemberServiceLayer" class = "com.sg.superherosightingsspringmvc.service.MemberServiceLayerImpl">
+        <constructor-arg ref ="MemberDao" />
+        <constructor-arg ref ="OrganizationServiceLayer" />
+    </bean> 
+    <bean name = "UserServiceLayer" class = "com.sg.superherosightingsspringmvc.service.UserServiceLayerImpl">
+        <constructor-arg ref ="UserDao" />
+    </bean>
+    <bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/> 
+    <bean name = "UserWebServices" class = "com.sg.superherosightingsspringmvc.webservice.UserWebServicesImpl"/>
+    <bean name = "HeroWebServices" class = "com.sg.superherosightingsspringmvc.webservice.HeroWebServicesImpl"/>
+    <bean name = "OrganizationWebServices" class = "com.sg.superherosightingsspringmvc.webservice.OrganizationWebServicesImpl"/>
+    <bean name = "LocationWebServices" class = "com.sg.superherosightingsspringmvc.webservice.LocationWebServicesImpl"/>
+    <bean name = "SightingWebServices" class = "com.sg.superherosightingsspringmvc.webservice.SightingWebServiceImpl"/>
+</beans>
